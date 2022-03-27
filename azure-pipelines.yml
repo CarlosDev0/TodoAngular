@@ -9,6 +9,9 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  artifactName: APP_$(Build.BuildNumber)
+
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
@@ -18,7 +21,30 @@ steps:
     versionSpec: '6.x'
     checkLatest: true
 
+- script: |
+    npm install -g @angular/cli
+    npm install
+  displayName: 'install dependencies'
 
+- script: ng build --prod --configuration=dev
+    displayName:'Build app for dev'
+    condition:eq(variables['branchName'], 'dev')
+
+- script: ng build --prod --configuration=staging
+    displayName:'Build app for staging'
+    condition:eq(variables['branchName'], 'staging')
+
+- script: ng build --prod --configuration=production
+    displayName:'Build app for production'
+    condition:eq(variables['branchName'], 'main')
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: dist
+    ArtifactName: $(artifactName)
+    publishLocation: 'Container'
+  condition: ne(variables['Build.Reason'], 'PullRequest')
+  displayName: 'Publish artifacts'
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
