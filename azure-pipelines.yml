@@ -27,6 +27,11 @@ steps:
     command: 'install'
   displayName: 'Npm-Install'
 
+- script: |
+    npm install -g @angular/cli
+    npm install
+  displayName: 'install dependencies'
+  
 - task: Npm@1
   inputs:
     command: 'custom'
