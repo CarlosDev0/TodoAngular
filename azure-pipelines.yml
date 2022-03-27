@@ -11,7 +11,7 @@ pool:
 
 variables:
   artifactName: APP_$(Build.BuildNumber)
-  branchName: todo
+  branchName: main
 
 steps:
 - script: echo Hello, world!
