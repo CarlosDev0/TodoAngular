@@ -22,23 +22,19 @@ steps:
     versionSpec: '6.x'
     checkLatest: true
 
-- script: |
-    npm install -g @angular/cli
-    npm install
-  displayName: 'install dependencies'
-
-- script: ng build --prod --configuration=dev
-    displayName:'Build app for dev'
-
-- task: VSBuild@1
+- task: Npm@1
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-  condition: succeededOrFailed()
+    command: 'install'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run ng build --prod'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'Todo'
+    publishLocation: 'Container'
+
+
