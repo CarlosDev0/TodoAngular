@@ -11,6 +11,7 @@ pool:
 
 variables:
   artifactName: APP_$(Build.BuildNumber)
+  branchName: todo
 
 steps:
 - script: echo Hello, world!
@@ -38,13 +39,12 @@ steps:
     displayName:'Build app for production'
     condition:eq(variables['branchName'], 'main')
 
-- task: PublishBuildArtifacts@1
+- task: VSBuild@1
   inputs:
-    PathtoPublish: dist
-    ArtifactName: $(artifactName)
-    publishLocation: 'Container'
-  condition: ne(variables['Build.Reason'], 'PullRequest')
-  displayName: 'Publish artifacts'
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
