@@ -29,15 +29,6 @@ steps:
 
 - script: ng build --prod --configuration=dev
     displayName:'Build app for dev'
-    condition:eq(variables['branchName'], 'dev')
-
-- script: ng build --prod --configuration=staging
-    displayName:'Build app for staging'
-    condition:eq(variables['branchName'], 'staging')
-
-- script: ng build --prod --configuration=production
-    displayName:'Build app for production'
-    condition:eq(variables['branchName'], 'main')
 
 - task: VSBuild@1
   inputs:
@@ -45,6 +36,7 @@ steps:
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+  condition: succeededOrFailed()
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
