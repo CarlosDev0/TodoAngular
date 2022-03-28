@@ -50,8 +50,7 @@ steps:
   inputs:
     targetPath: '$(Pipeline.Workspace)' # Required 
     artifactName: 'Todo' # Optional
-    artifactType: 'filepath'
-    fileSharePath: '\server\dist' # Required when artifactType = filepath
+    artifactType: 'pipeline'
 
 - task: NuGetCommand@2
   inputs:
