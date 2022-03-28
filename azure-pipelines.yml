@@ -48,7 +48,7 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Pipeline.Workspace)' # Required 
+    targetPath: '$(Build.ArtifactStagingDirectory)' # Required 
     artifactName: 'Todo' # Optional
     artifactType: 'pipeline'
 
