@@ -48,10 +48,10 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)' # Required 
+    targetPath: '$(Pipeline.Workspace)' # Required 
     artifactName: 'Todo' # Optional
-    artifactType: 'pipeline'
-
+    artifactType: 'filepath'
+    fileSharePath: '\server\dist' # Required when artifactType = filepath
 
 - task: NuGetCommand@2
   inputs:
