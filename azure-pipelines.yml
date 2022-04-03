@@ -1,0 +1,66 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  artifactName: APP_$(Build.BuildNumber)
+  branchName: main
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '9.x'
+
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+  displayName: 'Npm-Install'
+
+- script: |
+    npm install -g @angular/cli
+    npm install
+  displayName: 'install dependencies'
+  
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run ng build --prod'
+  displayName: 'Npm-Build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)' # Required 
+    artifactName: 'Todo' # Optional
+    artifactType: 'pipeline'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '362385b5-dd9b-4c1b-9bdd-0dd9b3c66d8a/022efcce-ae73-42af-a40c-c351bdcc9c8a'
+  condition: succeededOrFailed()
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'current'
+    targetPath: '$(Pipeline.Workspace)'
